@@ -1,0 +1,62 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// This tells Prisma to read your DATABASE_URL from the .env file
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL") // Added for Vercel compatibility
+}
+
+// Model for Authentication (Better Auth)
+// This is a minimal schema for better-auth.
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  hashedPassword String
+  sessions      Session[]
+  messages      Message[] // A user can send multiple messages
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  expiresAt DateTime
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Model for storing contacts
+model Contact {
+  id           String    @id @default(cuid())
+  name         String
+  phoneNumber  String    @unique // The contact's phone number (e.g., +1234567890)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  messages     Message[] // A contact can have many messages
+}
+
+// Model for storing individual messages
+model Message {
+  id        String   @id @default(cuid())
+  body      String   // The text content of the message
+  
+  // 'inbound' (from contact) or 'outbound' (from user)
+  direction String 
+  
+  sid       String?  @unique // Twilio's unique message SID, optional
+  
+  createdAt DateTime @default(now())
+
+  // --- Relations ---
+  contactId String
+  contact   Contact @relation(fields: [contactId], references: [id])
+
+  userId    String? // The user who sent this message (if outbound)
+  user      User?   @relation(fields: [userId], references: [id])
+
+  @@index([contactId, createdAt])
+}

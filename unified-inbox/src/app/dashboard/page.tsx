@@ -1,17 +1,30 @@
+// 1. Import the new components
+import { ContactsList } from "@/components/inbox/ContactsList";
+import { ChatHeader } from "@/components/inbox/ChatHeader";
+import { MessageList } from "@/components/inbox/MessageList";
+import { MessageComposer } from "@/components/inbox/MessageComposer";
+
 export default function InboxPage() {
   return (
-    <div className="flex h-full flex-col">
-      <h2 className="text-2xl font-semibold">Welcome to your Inbox</h2>
-      <p className="text-muted-foreground">
-        This is where your unified inbox page will live.
-      </p>
-      {/* According to your file structure, this page will later
-        be composed of components like:
-        - ContactsList.tsx (which will live in the Sidebar)
-        - ChatHeader.tsx
-        - MessageList.tsx
-        - MessageComposer.tsx
-      */}
+    <div className="flex h-[calc(100vh-4rem)]">
+      {" "}
+      {/* 100vh minus Topbar height (4rem = h-16) */}
+      {/* 2. Assemble the components */}
+      
+      {/* Contact List */}
+      <ContactsList />
+
+      {/* Chat Area */}
+      <div className="flex flex-1 flex-col">
+        {/* Chat Header */}
+        <ChatHeader />
+
+        {/* Message List (scrollable) */}
+        <MessageList />
+
+        {/* Message Composer */}
+        <MessageComposer />
+      </div>
     </div>
   );
 }
